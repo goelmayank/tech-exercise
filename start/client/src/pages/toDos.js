@@ -1,20 +1,22 @@
 import React, { useState } from "react";
-
+import "../styles.css";
 import logo from "../assets/images/logo.svg";
 import { ToDoForm, ToDoList } from "../components";
 import {
-  // addToDo,
-  // generateId,
+  appendToDo,
   findById,
   toggleToDo,
   modifyToDo,
   removeToDo
 } from "../lib/toDoHelpers";
 import { pipe, partial } from "../lib/utils";
+import { GET_TODOS, GET_DRAFT_TODOS } from "../queries";
 
 const ToDos = ({props}) => {
   console.log("Inside ToDos");
   const {
+    addOrRemoveFromDraft,
+    draftToDos,
     toDos,
     addToDo,
     deleteToDo,
@@ -47,21 +49,24 @@ const ToDos = ({props}) => {
 
   const handleSubmit = event => {
     console.log("Inside handleSubmit");
-    console.log(state);
     event.preventDefault();
 
     let toDoList;
     addToDo({
       variables: {
         toDoTitle: state.currentToDo,
-        toDoCompleted : false
-      }
+        toDoCompleted: false
+      },
+      refetchQueries: [
+        {
+          query: GET_TODOS
+        }
+      ]
     })
       .then(res => {
         console.log(state.toDos);
-        const newToDos = [res.data.add_toDo].concat(state.toDos)
-        console.log(newToDos);
-        setState({ ...state, toDos: newToDos, currentToDo: "" });
+        const updatedToDos = appendToDo(state.todos, res.data.add_toDo);
+        setState({ ...state, toDos: updatedToDos, currentToDo: "" });
       })
       .catch(err => {
         console.log(err);
@@ -76,15 +81,46 @@ const ToDos = ({props}) => {
     setState({ errorMessage: "Please supply a todo title" });
   };
 
+  const handleEdit = (id, event) => {
+    console.log("Inside handleEdit");
+    event.preventDefault();
+    const oldState = state;
+    const inEditToDo = findById(id, state.toDos);
+    setState({ ...state, currentToDo: inEditToDo.title });
+    if (oldState.currentToDo != "") {
+      addOrRemoveFromDraft({
+        variables: { id },
+        refetchQueries: [
+          {
+            query: GET_DRAFT_TODOS
+          }
+        ]
+      })
+        .then(res => {
+          console.log(draftToDos);
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+  };
+
   const handleRemove = (id, event) => {
     console.log("Inside handleRemove");
     console.log(id)
     event.preventDefault();
 
-    deleteToDo({ variables: { toDoId: id } })
+    deleteToDo({
+      variables: { toDoId: id },
+      refetchQueries: [
+        {
+          query: GET_TODOS
+        }
+      ]
+    })
       .then(res => {
-          const updatedToDos = removeToDo(state.toDos, id);
-          setState({...state, toDos: updatedToDos});
+        const updatedToDos = removeToDo(state.toDos, id);
+        setState({ ...state, toDos: updatedToDos });
       })
       .catch(err => {
         console.log(err);
@@ -114,6 +150,7 @@ const ToDos = ({props}) => {
 
         <ToDoList
           toDos={state.toDos}
+          handleEdit={handleEdit}
           handleToggle={handleToggle}
           handleRemove={handleRemove}
         />

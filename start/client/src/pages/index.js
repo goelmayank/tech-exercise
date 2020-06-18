@@ -2,27 +2,42 @@ import React, { Fragment } from 'react';
 import { Router } from '@reach/router';
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import {
-  GET_TODO,
+  TOGGLE_DRAFT,
+  GET_DRAFT_TODOS,
   GET_TODOS,
   ADD_TODO,
   DELETE_TODO,
-  DELETE_TODOS,
   UPDATE_TODO
 } from "../queries";
 
 import ToDos from './toDos';
-import DraftTodos from './draftToDos';
+import DraftToDos from "./draftToDos";
 
 export default function Pages() {
-  const { data, loading, error, fetchMore } = useQuery(GET_TODOS);
+  const draft = useQuery(GET_DRAFT_TODOS);
+  const draftToDos = draft.data.draftToDos;
+  const draftLoading = draft.loading;
+  const draftError = draft.error;
+  
+  const [addOrRemoveFromDraft] = useMutation(TOGGLE_DRAFT);
+
+  const { data, loading, error } = useQuery(GET_TODOS);
   const [addToDo] = useMutation(ADD_TODO);
   const [deleteToDo] = useMutation(DELETE_TODO);
   const [updateToDo] = useMutation(UPDATE_TODO);
 
-  if (loading) return <p>loading.............</p>;
-  if (error) return <p>ERROR: {error.message}</p>;
+  if (loading || draftLoading) return <p>loading.............</p>;
+  if (error || draftError)
+    return (
+      <p>
+        ERROR: {(error && error.message) || (draftError && draftError.message)}
+      </p>
+    );
+
   const props = {
+    draftToDos,
     toDos: data.toDos,
+    addOrRemoveFromDraft,
     addToDo,
     deleteToDo,
     updateToDo
@@ -31,7 +46,7 @@ export default function Pages() {
     <Fragment>
       <Router primary={false} component={Fragment}>
         <ToDos path="/" props={props} />
-        <DraftTodos path="draftTodos" props={props} />
+        <DraftToDos path="/draftToDos" props={props} />
       </Router>
     </Fragment>
   );

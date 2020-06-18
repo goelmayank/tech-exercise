@@ -6,15 +6,17 @@ export const ToDoList = props => {
   console.log("Inside ToDoList");
       return (
         <ul className="todoList">
-          {props.toDos && props.toDos.map(todo => (
-            <ToDoItem
-              key={todo._id}
-              {...todo}
-              handleToggle={props.handleToggle}
-              handleOnchangeCheckbox={props.handleOnchangeCheckbox}
-              handleRemove={props.handleRemove}
-            />
-          ))}
+          {props.toDos &&
+            props.toDos.map(todo => (
+              <ToDoItem
+                key={todo._id}
+                {...todo}
+                handleEdit={props.handleEdit}
+                handleToggle={props.handleToggle}
+                handleOnchangeCheckbox={props.handleOnchangeCheckbox}
+                handleRemove={props.handleRemove}
+              />
+            ))}
         </ul>
       );
 }

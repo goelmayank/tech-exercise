@@ -1,38 +1,44 @@
 import React, { useState } from "react";
-
+import "../styles.css";
 import logo from "../assets/images/logo.svg";
 import { ToDoForm, ToDoList } from "../components";
 import {
-  // addToDo,
-  // generateId,
+  appendToDo,
   findById,
   toggleToDo,
   modifyToDo,
   removeToDo
 } from "../lib/toDoHelpers";
 import { pipe, partial } from "../lib/utils";
+import { GET_TODOS } from "../queries";
 
 const DraftToDos = ({ props }) => {
-  console.log("Inside DraftToDos");
-  const { toDos, addToDo, deleteToDo, updateToDo } = props;
+  console.log("Inside draftToDos");
+  const {
+    addOrRemoveFromDraft, 
+    draftToDos,
+    addToDo,
+    deleteToDo,
+    updateToDo
+  } = props;
 
   const [state, setState] = useState({
     currentToDo: "",
     errorMessage: "",
-    toDos
+    toDos: draftToDos
   });
 
   const handleToggle = todoId => {
     console.log("Inside handleToggle");
-    //Get updatedDraftToDos
+    //Get updateddraftToDos
     const pipeline = pipe(
       findById,
       toggleToDo,
       partial(modifyToDo, state.toDos)
     );
-    const updatedDraftToDos = pipeline(todoId, state.toDos);
+    const updateddraftToDos = pipeline(todoId, state.toDos);
 
-    setState({ toDos: updatedDraftToDos });
+    setState({ toDos: updateddraftToDos });
   };
 
   const handleOnchangeInput = event => {
@@ -42,7 +48,6 @@ const DraftToDos = ({ props }) => {
 
   const handleSubmit = event => {
     console.log("Inside handleSubmit");
-    console.log(state);
     event.preventDefault();
 
     let toDoList;
@@ -50,13 +55,17 @@ const DraftToDos = ({ props }) => {
       variables: {
         toDoTitle: state.currentToDo,
         toDoCompleted: false
-      }
+      },
+      refetchQueries: [
+        {
+          query: GET_TODOS
+        }
+      ]
     })
       .then(res => {
         console.log(state.toDos);
-        const newDraftToDos = [res.data.add_toDo].concat(state.toDos);
-        console.log(newDraftToDos);
-        setState({ ...state, toDos: newDraftToDos, currentToDo: "" });
+        const updatedToDos = appendToDo(this.state.todos, res.data.add_toDo);
+        setState({ ...state, toDos: updatedToDos, currentToDo: "" });
       })
       .catch(err => {
         console.log(err);
@@ -75,10 +84,17 @@ const DraftToDos = ({ props }) => {
     console.log(id);
     event.preventDefault();
 
-    deleteToDo({ variables: { toDoId: id } })
+    deleteToDo({
+      variables: { toDoId: id },
+      refetchQueries: [
+        {
+          query: GET_TODOS
+        }
+      ]
+    })
       .then(res => {
-        const updatedDraftToDos = removeToDo(state.toDos, id);
-        setState({ ...state, toDos: updatedDraftToDos });
+        const updateddraftToDos = removeToDo(state.toDos, id);
+        setState({ ...state, toDos: updateddraftToDos });
       })
       .catch(err => {
         console.log(err);
@@ -88,12 +104,12 @@ const DraftToDos = ({ props }) => {
   const submitHandler = state.currentToDo ? handleSubmit : handleEmptySubmit;
 
   return (
-    <div className="DraftToDos">
-      <header className="DraftToDos-header">
-        <img src={logo} className="DraftToDos-logo" alt="logo" />
-        <h1 className="DraftToDos-title">React DraftToDos</h1>
+    <div className="ToDos">
+      <header className="ToDos-header">
+        <img src={logo} className="ToDos-logo" alt="logo" />
+        <h1 className="ToDos-title">React ToDos</h1>
       </header>
-      <div className="todoWrDraftToDoser">
+      <div className="todoWrToDoser">
         {state.errorMessage && (
           <div className="errorMessage">{state.errorMessage}</div>
         )}
