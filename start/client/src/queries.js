@@ -42,7 +42,7 @@ export const ADD_TODO = gql`
        `;
 
 export const DELETE_TODO = gql`
-         mutation delete_toDo($toDoId: ID) {
+         mutation delete_toDo($toDoId: ID!) {
            delete_toDo(_id: $toDoId) {
              deletedCount
            }

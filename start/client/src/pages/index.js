@@ -22,9 +22,9 @@ export default function Pages() {
   const [addOrRemoveFromDraft] = useMutation(TOGGLE_DRAFT);
 
   const { data, loading, error } = useQuery(GET_TODOS);
-  const [addToDo] = useMutation(ADD_TODO);
-  const [deleteToDo] = useMutation(DELETE_TODO);
-  const [updateToDo] = useMutation(UPDATE_TODO);
+  const [addToDo, addData] = useMutation(ADD_TODO);
+  const [deleteToDo,deleteData] = useMutation(DELETE_TODO);
+  const [updateToDo,updateData] = useMutation(UPDATE_TODO);
 
   if (loading || draftLoading) return <p>loading.............</p>;
   if (error || draftError)

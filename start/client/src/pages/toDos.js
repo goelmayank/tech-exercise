@@ -86,7 +86,9 @@ const ToDos = ({props}) => {
     const oldState = state;
     const inEditToDo = findById(id, state.toDos);
     setState({ ...state, currentToDo: inEditToDo.title });
+    
     if (oldState.currentToDo !== "") {
+      console.log(oldState.currentToDo);
       addOrRemoveFromDraft({
         variables: { id },
         refetchQueries: [
