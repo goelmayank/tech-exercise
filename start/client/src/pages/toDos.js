@@ -20,7 +20,7 @@ const ToDos = ({props}) => {
     toDos,
     addToDo,
     deleteToDo,
-    updateToDo
+    // updateToDo
   } = props;
   
   const [state, setState] = useState({
@@ -51,7 +51,6 @@ const ToDos = ({props}) => {
     console.log("Inside handleSubmit");
     event.preventDefault();
 
-    let toDoList;
     addToDo({
       variables: {
         toDoTitle: state.currentToDo,
@@ -87,7 +86,7 @@ const ToDos = ({props}) => {
     const oldState = state;
     const inEditToDo = findById(id, state.toDos);
     setState({ ...state, currentToDo: inEditToDo.title });
-    if (oldState.currentToDo != "") {
+    if (oldState.currentToDo !== "") {
       addOrRemoveFromDraft({
         variables: { id },
         refetchQueries: [
