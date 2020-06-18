@@ -8,9 +8,13 @@ import logger from './logger';
 
 import Todos from './datasources/todos';
 
+// creates a sequelize connection once. NOT for every request
+const { createStore } = require('./utils');
+const store = createStore();
+
 // set up any dataSources our resolvers need
 const dataSources = () => ({
-  todos: new Todos(),
+  todosAPI: new Todos({ store }),
 });
 
 // Set up Apollo Server
