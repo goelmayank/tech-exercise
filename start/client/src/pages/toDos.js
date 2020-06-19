@@ -7,7 +7,6 @@ import "../styles.css";
 
 import {
   generateId,
-  appendToDo,
   findById,
   toggleToDo,
   modifyToDo,
@@ -19,7 +18,8 @@ import { GET_TODOS, GET_DRAFT_TODOS } from "../queries";
 const ToDos = ({props}) => {
   // console.log("Inside ToDos");
   const {
-    addOrRemoveFromDraft,
+    addDraftToDo,
+    refetchDraftToDos,
     draftToDos,
     toDos,
     addToDo,
@@ -68,7 +68,7 @@ const ToDos = ({props}) => {
     })
       .then(res => {
         // console.log(state.toDos);
-        const updatedToDos = appendToDo(state.todos, res.data.add_toDo);
+        const updatedToDos = [res.data.add_toDo, ...state.todos];
         setState({ ...state, toDos: updatedToDos, currentToDo: "" });
       })
       .catch(err => {
@@ -100,14 +100,12 @@ const ToDos = ({props}) => {
         title: oldState.currentToDo,
         completed: false
       }
-
-      addOrRemoveFromDraft({
+      addDraftToDo({
         variables: { draftToDo },
-        refetchQueries: ['GET_DRAFT_TODOS']
+      });
+      refetchDraftToDos().then(res => {
+        console.log("Inside handleEdit after refetch res: ", res.data);
       })
-        .then(res => {
-          console.log("Inside handleEdit sucess callback draftToDos: ", res);
-        })
         .catch(err => {
           console.log(err);
         });

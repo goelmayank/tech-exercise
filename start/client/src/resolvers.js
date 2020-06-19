@@ -9,31 +9,44 @@ export const typeDefs = gql`
   }
 
   extend type Mutation {
-    addOrRemoveFromDraft(draftToDo: ToDo): [ToDo]
+    addDraftToDo(draftToDo: ToDo): [ToDo]
+    deleteDraftToDo(draftToDo: ToDo): [ToDo]
   }
 `;
 
 export const resolvers = {
          Mutation: {
-           addOrRemoveFromDraft: (_, { draftToDo }, { cache }) => {
-             console.log("Inside addOrRemoveFromDraft draftToDo: ", draftToDo);
+           addDraftToDo: (_, { draftToDo }, { cache }) => {
+             console.log("Inside addDraftToDo draftToDo: ", draftToDo);
              const queryResult = cache.readQuery({ query: GET_DRAFT_TODOS });
-             console.log("Inside addOrRemoveFromDraft initial queryResult: ", queryResult);
+             console.log("Inside addDraftToDo initial queryResult: ", queryResult);
              if (queryResult) {
                const { draftToDos } = queryResult;
             
                const data = {
-                 draftToDos: (typeof (findById(draftToDo._id, draftToDos)) != "undefined")
-                   ? removeToDo(draftToDos, draftToDo._id )
-                   : [...draftToDos, draftToDo]
+                 draftToDos: [...draftToDos, draftToDo]
                };
-               console.log("Inside addOrRemoveFromDraft final data: ", data);
+               console.log("Inside addDraftToDo final data: ", data);
                cache.writeQuery({ query: GET_DRAFT_TODOS, data });
-               const updatedQueryResult = cache.readQuery({ query: GET_DRAFT_TODOS });
-               console.log("Inside addOrRemoveFromDraft updated queryResult: ", updatedQueryResult);
                return data.draftToDos;
              }
              return [];
-           }
+           },
+          deleteDraftToDo: (_, { draftToDo }, { cache }) => {
+            console.log("Inside deleteDraftToDo draftToDo: ", draftToDo);
+            const queryResult = cache.readQuery({ query: GET_DRAFT_TODOS });
+            console.log("Inside deleteDraftToDo initial queryResult: ", queryResult);
+            if (queryResult) {
+              const { draftToDos } = queryResult;
+
+              const data = {
+                draftToDos: removeToDo(draftToDos, draftToDo._id)
+              };
+              console.log("Inside deleteDraftToDo final data: ", data);
+              cache.writeQuery({ query: GET_DRAFT_TODOS, data });
+              return data.draftToDos;
+            }
+            return [];
+          }
          }
        };

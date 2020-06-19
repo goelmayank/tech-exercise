@@ -6,9 +6,15 @@ export const GET_DRAFT_TODOS = gql`
   }
 `;
 
-export const TOGGLE_DRAFT = gql`
-  mutation addOrRemoveFromDraft($draftToDo: ToDo!) {
-    addOrRemoveFromDraft(draftToDo: $draftToDo) @client
+export const ADD_DRAFT_TODO = gql`
+  mutation addDraftToDo($draftToDo: ToDo!) {
+    addDraftToDo(draftToDo: $draftToDo) @client
+  }
+`;
+
+export const REMOVE_DRAFT_TODO = gql`
+  mutation deleteDraftToDo($draftToDo: ToDo!) {
+    deleteDraftToDo(draftToDo: $draftToDo) @client
   }
 `;
 

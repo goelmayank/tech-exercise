@@ -2,7 +2,8 @@ import React, { Fragment } from 'react';
 import { Router } from '@reach/router';
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import {
-  TOGGLE_DRAFT,
+  ADD_DRAFT_TODO,
+  REMOVE_DRAFT_TODO,
   GET_DRAFT_TODOS,
   GET_TODOS,
   ADD_TODO,
@@ -18,9 +19,10 @@ export default function Pages() {
   const draftToDos = draft.data.draftToDos;
   const draftLoading = draft.loading;
   const draftError = draft.error;
+  const refetchDraftToDos = draft.refetch;
   
-  const [addOrRemoveFromDraft] = useMutation(TOGGLE_DRAFT);
-
+  const [addDraftToDo] = useMutation(ADD_DRAFT_TODO);
+  const [deleteDraftToDo] = useMutation(REMOVE_DRAFT_TODO);
   const { data, loading, error } = useQuery(GET_TODOS);
   const [addToDo] = useMutation(ADD_TODO);
   const [deleteToDo] = useMutation(DELETE_TODO);
@@ -36,8 +38,10 @@ export default function Pages() {
 
   const props = {
     draftToDos,
+    refetchDraftToDos,
+    addDraftToDo,
+    deleteDraftToDo,
     toDos: data.toDos,
-    addOrRemoveFromDraft,
     addToDo,
     deleteToDo,
     updateToDo
