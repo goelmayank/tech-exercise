@@ -3,6 +3,7 @@ import "../styles.css";
 import logo from "../assets/images/logo.svg";
 import { ToDoForm, ToDoList } from "../components";
 import {
+  generateId,
   appendToDo,
   findById,
   toggleToDo,
@@ -13,7 +14,7 @@ import { pipe, partial } from "../lib/utils";
 import { GET_TODOS, GET_DRAFT_TODOS } from "../queries";
 
 const ToDos = ({props}) => {
-  console.log("Inside ToDos");
+  // console.log("Inside ToDos");
   const {
     addOrRemoveFromDraft,
     draftToDos,
@@ -30,7 +31,7 @@ const ToDos = ({props}) => {
   });
 
   const handleToggle = todoId => {
-    console.log("Inside handleToggle");
+    // console.log("Inside handleToggle");
     //Get updatedToDos
     const pipeline = pipe(
       findById,
@@ -43,12 +44,12 @@ const ToDos = ({props}) => {
   };
 
   const handleOnchangeInput = event => {
-    console.log("Inside handleOnchangeInput");
+    // console.log("Inside handleOnchangeInput");
     setState({ ...state, currentToDo: event.target.value, errorMessage: "" });
   };
 
   const handleSubmit = event => {
-    console.log("Inside handleSubmit");
+    // console.log("Inside handleSubmit");
     event.preventDefault();
 
     addToDo({
@@ -63,18 +64,18 @@ const ToDos = ({props}) => {
       ]
     })
       .then(res => {
-        console.log(state.toDos);
+        // console.log(state.toDos);
         const updatedToDos = appendToDo(state.todos, res.data.add_toDo);
         setState({ ...state, toDos: updatedToDos, currentToDo: "" });
       })
       .catch(err => {
-        console.log(err);
+        // console.log(err);
       });
    
   };
 
   const handleEmptySubmit = event => {
-    console.log("Inside handleEmptySubmit");
+    // console.log("Inside handleEmptySubmit");
     event.preventDefault();
 
     setState({ errorMessage: "Please supply a todo title" });
@@ -88,27 +89,33 @@ const ToDos = ({props}) => {
     setState({ ...state, currentToDo: inEditToDo.title });
     
     if (oldState.currentToDo !== "") {
-      console.log(oldState.currentToDo);
+      const draftToDo = {
+        _id: generateId(),
+        title: oldState.currentToDo,
+        isInDraft: true,
+        checked: false
+      }
+      console.log(draftToDo);
+      appendToDo(draftToDos, draftToDo);
+      
       addOrRemoveFromDraft({
-        variables: { id },
-        refetchQueries: [
-          {
-            query: GET_DRAFT_TODOS
-          }
-        ]
+        variables: { draftToDo },
+        refetchQueries: ['GET_DRAFT_TODOS'],
+        update(cache) {
+          cache.writeData({ data: { draftToDos } });
+        }
       })
         .then(res => {
           console.log(draftToDos);
         })
         .catch(err => {
-          console.log(err);
+          // console.log(err);
         });
     }
   };
 
   const handleRemove = (id, event) => {
-    console.log("Inside handleRemove");
-    console.log(id)
+    // console.log("Inside handleRemove");
     event.preventDefault();
 
     deleteToDo({
@@ -124,7 +131,7 @@ const ToDos = ({props}) => {
         setState({ ...state, toDos: updatedToDos });
       })
       .catch(err => {
-        console.log(err);
+        // console.log(err);
       });
   };
 

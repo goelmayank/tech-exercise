@@ -3,7 +3,7 @@ import { ToDoItem } from './ToDoItem'
 import PropTypes from 'prop-types'
 
 export const ToDoList = props => { 
-  console.log("Inside ToDoList");
+  // console.log("Inside ToDoList");
       return (
         <ul className="todoList">
           {props.toDos &&

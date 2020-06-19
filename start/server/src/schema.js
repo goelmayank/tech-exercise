@@ -6,7 +6,7 @@ const typeDefs = gql`
     toDo(_id: String!): ToDo @cacheControl(maxAge: 5)
   }
   type ToDo {
-    _id: ID!
+    _id: ID
     title: String
     completed: Boolean
   }

@@ -1,6 +1,7 @@
 import gql from 'graphql-tag';
 
 import { GET_DRAFT_TODOS } from "./queries";
+import { findById, removeToDo } from "./lib/toDoHelpers";
 
 export const typeDefs = gql`
   extend type Query {
@@ -26,20 +27,21 @@ export const resolvers = {
              const queryResult =
                cache.readQuery({ query: GET_DRAFT_TODOS });
              if (queryResult) {
-               return queryResult.draftToDos.includes(toDo._id);
+               return queryResult.draftToDos.includes(toDo);
              }
              return false;
            }
          },
          Mutation: {
-           addOrRemoveFromDraft: (_, { id }, { cache }) => {
+           addOrRemoveFromDraft: (_, { draftToDo }, { cache }) => {
              const queryResult = cache.readQuery({ query: GET_DRAFT_TODOS });
              if (queryResult) {
                const { draftToDos } = queryResult;
                const data = {
-                 draftToDos: draftToDos.includes(id)
-                   ? draftToDos.filter(i => i !== id)
-                   : [...draftToDos, id]
+                        
+                 draftToDos: (findById(draftToDo._id, draftToDos) !== -1)
+                   ? removeToDo(draftToDos, draftToDo._id )
+                   : [...draftToDos, draftToDo]
                };
                cache.writeQuery({ query: GET_DRAFT_TODOS, data });
                return data.draftToDos;

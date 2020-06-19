@@ -26,12 +26,7 @@ export const findById = (id, list) => list.find(item => item._id === id)
  * 
  * @param {any} toDo 
  */
-export const toggleToDo = (toDo) => {
-    console.log("Inside toggleToDo");
-    console.log(toDo);
-    return toDo && { ...toDo, completed: !toDo.completed } 
-    
-}
+export const toggleToDo = (toDo) => ({ ...toDo, completed: !toDo.completed })
 
 /**
  * modifyToDo
@@ -41,9 +36,9 @@ export const toggleToDo = (toDo) => {
  * @returns 
  */
 export const modifyToDo = (list, updatedItem) => { 
-    console.log("Inside modifyToDo");
-    console.log(list);
-    console.log(updatedItem);
+    // console.log("Inside modifyToDo");
+    // console.log(list);
+    // console.log(updatedItem);
     const updatedIndex = list.findIndex(item => item._id === updatedItem._id)
 
     return [
@@ -54,9 +49,9 @@ export const modifyToDo = (list, updatedItem) => {
 }
 
 export const removeToDo = (list, toDoId) => {
-    console.log("Inside removeToDo");
-    console.log(list);
-    console.log(toDoId);
+    // console.log("Inside removeToDo");
+    // console.log(list);
+    // console.log(toDoId);
     const toDoIndex = list.findIndex(item => item._id === toDoId)
     return [
         ...list.slice(0, toDoIndex),

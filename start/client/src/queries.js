@@ -7,8 +7,8 @@ export const GET_DRAFT_TODOS = gql`
 `;
 
 export const TOGGLE_DRAFT = gql`
-  mutation addOrRemoveFromDraft($toDoId: ID!) {
-    addOrRemoveFromDraft(id: $toDoId) @client
+  mutation addOrRemoveFromDraft($draftToDo: ToDo!) {
+    addOrRemoveFromDraft(draftToDo: $draftToDo) @client
   }
 `;
 

@@ -14,20 +14,20 @@ export default {
       let newToDo = new ToDo({ title: args.title, completed: args.completed });
       newToDo.save((err, saved) => {
         if (err) {
-          console.log(`Error adding todo: ${err.messages}`);
+          // console.log(`Error adding todo: ${err.messages}`);
           return null;
         } else newToDo = saved;
       });
       return newToDo;
     },
     delete_toDo: (_, args) => {
-      console.log('Inside delete_toDo');
-      console.log(args._id)
+      // console.log('Inside delete_toDo');
+      // console.log(args._id)
       return ToDo.find({ _id: args._id }).remove(function (err, result) {
         if (err) {
-          console.log(err);
+          // console.log(err);
         } else {
-          console.log(result.deletedCount);
+          // console.log(result.deletedCount);
         }
         return {
           deletedCount: result.deletedCount || 0,
@@ -37,9 +37,9 @@ export default {
     delete_toDos: (_, args) => {
       return ToDo.deleteMany({}, function (err, result) {
         if (err) {
-          console.log(err);
+          // console.log(err);
         } else {
-          console.log(result.deletedCount);
+          // console.log(result.deletedCount);
         }
         return {
           deletedCount: result.deletedCount || 0,

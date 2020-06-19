@@ -13,7 +13,7 @@ import { pipe, partial } from "../lib/utils";
 import { GET_TODOS } from "../queries";
 
 const DraftToDos = ({ props }) => {
-  console.log("Inside draftToDos");
+  // console.log("Inside draftToDos");
   const {
     addOrRemoveFromDraft, 
     draftToDos,
@@ -29,7 +29,7 @@ const DraftToDos = ({ props }) => {
   });
 
   const handleToggle = todoId => {
-    console.log("Inside handleToggle");
+    // console.log("Inside handleToggle");
     //Get updateddraftToDos
     const pipeline = pipe(
       findById,
@@ -42,12 +42,12 @@ const DraftToDos = ({ props }) => {
   };
 
   const handleOnchangeInput = event => {
-    console.log("Inside handleOnchangeInput");
+    // console.log("Inside handleOnchangeInput");
     setState({ ...state, currentToDo: event.target.value, errorMessage: "" });
   };
 
   const handleSubmit = event => {
-    console.log("Inside handleSubmit");
+    // console.log("Inside handleSubmit");
     event.preventDefault();
 
     let toDoList;
@@ -63,25 +63,25 @@ const DraftToDos = ({ props }) => {
       ]
     })
       .then(res => {
-        console.log(state.toDos);
+        // console.log(state.toDos);
         const updatedToDos = appendToDo(this.state.todos, res.data.add_toDo);
         setState({ ...state, toDos: updatedToDos, currentToDo: "" });
       })
       .catch(err => {
-        console.log(err);
+        // console.log(err);
       });
   };
 
   const handleEmptySubmit = event => {
-    console.log("Inside handleEmptySubmit");
+    // console.log("Inside handleEmptySubmit");
     event.preventDefault();
 
     setState({ errorMessage: "Please supply a todo title" });
   };
 
   const handleRemove = (id, event) => {
-    console.log("Inside handleRemove");
-    console.log(id);
+    // console.log("Inside handleRemove");
+    // console.log(id);
     event.preventDefault();
 
     deleteToDo({
@@ -97,7 +97,7 @@ const DraftToDos = ({ props }) => {
         setState({ ...state, toDos: updateddraftToDos });
       })
       .catch(err => {
-        console.log(err);
+        // console.log(err);
       });
   };
 
