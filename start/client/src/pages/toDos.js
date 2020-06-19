@@ -1,7 +1,10 @@
 import React, { useState } from "react";
-import "../styles.css";
-import logo from "../assets/images/logo.svg";
+
+
 import { ToDoForm, ToDoList } from "../components";
+import logo from "../assets/images/logo.svg";
+import "../styles.css";
+
 import {
   generateId,
   appendToDo,
@@ -82,34 +85,31 @@ const ToDos = ({props}) => {
   };
 
   const handleEdit = (id, event) => {
-    console.log("Inside handleEdit");
     event.preventDefault();
     const oldState = state;
-    const inEditToDo = findById(id, state.toDos);
-    setState({ ...state, currentToDo: inEditToDo.title });
+    const selectedToDo = findById(id, state.toDos);
+    if (typeof (selectedToDo) == "undefined") {
+      setState({ ...state, errorMessage: "Unable to find to do id in list" });
+      return null;
+    }
+    setState({ ...state, currentToDo: selectedToDo.title });
     
     if (oldState.currentToDo !== "") {
       const draftToDo = {
         _id: generateId(),
         title: oldState.currentToDo,
-        isInDraft: true,
-        checked: false
+        completed: false
       }
-      console.log(draftToDo);
-      appendToDo(draftToDos, draftToDo);
-      
+
       addOrRemoveFromDraft({
         variables: { draftToDo },
-        refetchQueries: ['GET_DRAFT_TODOS'],
-        update(cache) {
-          cache.writeData({ data: { draftToDos } });
-        }
+        refetchQueries: ['GET_DRAFT_TODOS']
       })
         .then(res => {
-          console.log(draftToDos);
+          console.log("Inside handleEdit sucess callback draftToDos: ", res);
         })
         .catch(err => {
-          // console.log(err);
+          console.log(err);
         });
     }
   };

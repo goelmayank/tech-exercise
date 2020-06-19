@@ -4,7 +4,7 @@
  * @param {any} list 
  * @param {any} item 
  */
-export const appendToDo = (list, item) => [item, list]
+export const appendToDo = (list, item) =>  [item, list];
 
 /**
  * generateId
