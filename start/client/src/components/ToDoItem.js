@@ -29,7 +29,7 @@ export const ToDoItem = props => {
 }
 
 ToDoItem.propTypes = {
-    id: PropTypes.number.isRequired,
+    _id: PropTypes.string.isRequired,
     checked: PropTypes.bool,
     title: PropTypes.string.isRequired
 }

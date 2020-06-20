@@ -64,9 +64,9 @@ export const DELETE_TODOS = gql`
 
 export const UPDATE_TODO = gql`
          mutation update_toDo(
-           $toDoId: ID
+           $toDoId: ID!
            $toDoTitle: String
-           $toDoCompleted: String
+           $toDoCompleted: Boolean
          ) {
            update_toDo(
              _id: $toDoId

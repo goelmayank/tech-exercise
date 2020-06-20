@@ -1,58 +1,57 @@
 import React, { useState } from "react";
 
-
 import { ToDoForm, ToDoList } from "../components";
+import { findById } from "../lib/toDoHelpers";
 import logo from "../assets/images/logo.svg";
+import { GET_TODOS } from "../queries";
 import "../styles.css";
 
-import {
-  generateId,
-  findById,
-  toggleToDo,
-  modifyToDo,
-  removeToDo
-} from "../lib/toDoHelpers";
-import { pipe, partial } from "../lib/utils";
-import { GET_TODOS, GET_DRAFT_TODOS } from "../queries";
-
 const ToDos = ({props}) => {
-  // console.log("Inside ToDos");
   const {
-    addDraftToDo,
-    refetchDraftToDos,
-    draftToDos,
+    addAndRefreshDrafts,
     toDos,
     addToDo,
     deleteToDo,
-    // updateToDo
+    updateToDo
   } = props;
   
   const [state, setState] = useState({
     currentToDo: "",
-    errorMessage: "",
-    toDos
+    errorMessage: ""
   });
 
-  const handleToggle = todoId => {
-    // console.log("Inside handleToggle");
-    //Get updatedToDos
-    const pipeline = pipe(
-      findById,
-      toggleToDo,
-      partial(modifyToDo, state.toDos)
-    );
-    const updatedToDos = pipeline(todoId, state.toDos);
+  const handleToggle = (id, event) => {
+    const selectedToDo = findById(id, toDos);
+    if (typeof selectedToDo == "undefined") {
+      setState({ ...state, errorMessage: "Unable to find to do id in list" });
+      return null;
+    }
+    console.log("variables:", {
+        toDoId: selectedToDo._id,
+        toDoTitle: selectedToDo.title,
+        toDoCompleted: !selectedToDo.completed
+      });
 
-    setState({ toDos: updatedToDos });
+    updateToDo({
+      variables: {
+        toDoId: selectedToDo._id,
+        toDoTitle: selectedToDo.title,
+        toDoCompleted: !selectedToDo.completed
+      },
+      refetchQueries: [
+        {
+          query: GET_TODOS
+        }
+      ]
+    });
   };
 
   const handleOnchangeInput = event => {
-    // console.log("Inside handleOnchangeInput");
     setState({ ...state, currentToDo: event.target.value, errorMessage: "" });
   };
 
   const handleSubmit = event => {
-    // console.log("Inside handleSubmit");
+    //if id present --> update else create
     event.preventDefault();
 
     addToDo({
@@ -67,18 +66,16 @@ const ToDos = ({props}) => {
       ]
     })
       .then(res => {
-        // console.log(state.toDos);
-        const updatedToDos = [res.data.add_toDo, ...state.todos];
-        setState({ ...state, toDos: updatedToDos, currentToDo: "" });
+        const updatedToDos = [res.data.add_toDo, toDos];
+        setState({ ...state, currentToDo: "" });
       })
       .catch(err => {
-        // console.log(err);
+        console.log(err);
       });
    
   };
 
   const handleEmptySubmit = event => {
-    // console.log("Inside handleEmptySubmit");
     event.preventDefault();
 
     setState({ errorMessage: "Please supply a todo title" });
@@ -87,7 +84,7 @@ const ToDos = ({props}) => {
   const handleEdit = (id, event) => {
     event.preventDefault();
     const oldState = state;
-    const selectedToDo = findById(id, state.toDos);
+    const selectedToDo = findById(id, toDos);
     if (typeof (selectedToDo) == "undefined") {
       setState({ ...state, errorMessage: "Unable to find to do id in list" });
       return null;
@@ -95,25 +92,11 @@ const ToDos = ({props}) => {
     setState({ ...state, currentToDo: selectedToDo.title });
     
     if (oldState.currentToDo !== "") {
-      const draftToDo = {
-        _id: generateId(),
-        title: oldState.currentToDo,
-        completed: false
-      }
-      addDraftToDo({
-        variables: { draftToDo },
-      });
-      refetchDraftToDos().then(res => {
-        console.log("Inside handleEdit after refetch res: ", res.data);
-      })
-        .catch(err => {
-          console.log(err);
-        });
+      addAndRefreshDrafts(oldState.currentToDo);      
     }
   };
 
   const handleRemove = (id, event) => {
-    // console.log("Inside handleRemove");
     event.preventDefault();
 
     deleteToDo({
@@ -124,13 +107,6 @@ const ToDos = ({props}) => {
         }
       ]
     })
-      .then(res => {
-        const updatedToDos = removeToDo(state.toDos, id);
-        setState({ ...state, toDos: updatedToDos });
-      })
-      .catch(err => {
-        // console.log(err);
-      });
   };
 
   const submitHandler = state.currentToDo
@@ -155,7 +131,7 @@ const ToDos = ({props}) => {
         />
 
         <ToDoList
-          toDos={state.toDos}
+          toDos={toDos}
           handleEdit={handleEdit}
           handleToggle={handleToggle}
           handleRemove={handleRemove}

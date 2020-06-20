@@ -3,7 +3,7 @@ import { ToDoItem } from './ToDoItem'
 import PropTypes from 'prop-types'
 
 export const ToDoList = props => { 
-  console.log("Inside ToDoList", props.toDos);
+  console.log("Inside ToDoList toDos: ", props.toDos);
       return (
         <ul className="todoList">
           {props.toDos &&
@@ -22,7 +22,7 @@ export const ToDoList = props => {
 }
 
 ToDoList.propTypes = {
-    todos: PropTypes.array.isRequired,
+    toDos: PropTypes.array.isRequired,
     handleOnchangeCheckbox: PropTypes.func,
     handleRemove: PropTypes.func.isRequired
 }

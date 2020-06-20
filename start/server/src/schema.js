@@ -14,7 +14,7 @@ const typeDefs = gql`
     add_toDo(title: String, completed: Boolean): ToDo
     delete_toDo(_id: ID!): DeletedCount!
     delete_toDos: DeletedCount!
-    update_toDo(_id: ID!, title: String!, completed: Boolean!): ToDo
+    update_toDo(_id: ID!, title: String, completed: Boolean): ToDo
   }
   type DeletedCount {
     deletedCount: Int!

@@ -26,8 +26,9 @@ export const resolvers = {
                const data = {
                  draftToDos: [...draftToDos, draftToDo]
                };
-               console.log("Inside addDraftToDo final data: ", data);
                cache.writeQuery({ query: GET_DRAFT_TODOS, data });
+               const updatedQueryResult = cache.readQuery({ query: GET_DRAFT_TODOS });
+               console.log("Inside addDraftToDo updatedQueryResult: ", updatedQueryResult);
                return data.draftToDos;
              }
              return [];

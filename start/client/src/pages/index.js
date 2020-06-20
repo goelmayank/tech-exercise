@@ -11,6 +11,10 @@ import {
   UPDATE_TODO
 } from "../queries";
 
+import {
+  generateId
+} from "../lib/toDoHelpers";
+
 import ToDos from './toDos';
 import DraftToDos from "./draftToDos";
 
@@ -19,7 +23,6 @@ export default function Pages() {
   const draftToDos = draft.data.draftToDos;
   const draftLoading = draft.loading;
   const draftError = draft.error;
-  const refetchDraftToDos = draft.refetch;
   
   const [addDraftToDo] = useMutation(ADD_DRAFT_TODO);
   const [deleteDraftToDo] = useMutation(REMOVE_DRAFT_TODO);
@@ -35,17 +38,32 @@ export default function Pages() {
         ERROR: {(error && error.message) || (draftError && draftError.message)}
       </p>
     );
-
+  
+  const addAndRefreshDrafts = (title) => {
+    const draftToDo = {
+      _id: generateId(),
+      title: title,
+      completed: false
+    }
+    addDraftToDo({
+      variables: { draftToDo },
+      refetchQueries: [
+        {
+          query: GET_DRAFT_TODOS
+        }
+      ]
+    });
+  }
   const props = {
     draftToDos,
-    refetchDraftToDos,
-    addDraftToDo,
+    addAndRefreshDrafts,
     deleteDraftToDo,
     toDos: data.toDos,
     addToDo,
     deleteToDo,
     updateToDo
   }
+  console.log('Inside pages draftToDos', draft.data.draftToDos);
   return (
     <Fragment>
       <Router primary={false} component={Fragment}>
