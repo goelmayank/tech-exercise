@@ -2,6 +2,8 @@ import React, { Fragment } from 'react';
 import { Router } from '@reach/router';
 import { useQuery, useMutation } from "@apollo/react-hooks";
 import {
+  GET_CURRENT_TODO,
+  UPDATE_CURRENT_TODO,
   ADD_DRAFT_TODO,
   REMOVE_DRAFT_TODO,
   GET_DRAFT_TODOS,
@@ -19,11 +21,18 @@ import ToDos from './toDos';
 import DraftToDos from "./draftToDos";
 
 export default function Pages() {
+  const currentToDoQuery = useQuery(GET_CURRENT_TODO);
+  console.log('Inside pages currentToDoQuery', currentToDoQuery);
+  // const currentToDo = currentToDoQuery.data.currentToDo;
+  const currentToDoLoading = currentToDoQuery.loading;
+  const currentToDoError = currentToDoQuery.error;
+
   const draft = useQuery(GET_DRAFT_TODOS);
   const draftToDos = draft.data.draftToDos;
   const draftLoading = draft.loading;
   const draftError = draft.error;
   
+  // const [updateCurrentToDo] = useMutation(UPDATE_CURRENT_TODO);
   const [addDraftToDo] = useMutation(ADD_DRAFT_TODO);
   const [deleteDraftToDo] = useMutation(REMOVE_DRAFT_TODO);
   const { data, loading, error } = useQuery(GET_TODOS);
@@ -31,32 +40,35 @@ export default function Pages() {
   const [deleteToDo] = useMutation(DELETE_TODO);
   const [updateToDo] = useMutation(UPDATE_TODO);
 
-  if (loading || draftLoading) return <p>loading.............</p>;
-  if (error || draftError)
+  // const modifyCurrentToDo = (args) => {
+  //   const newToDo = {
+  //     _id: args._id,
+  //     title: args.title || "",
+  //     completed: args.completed || false
+  //   }
+  //   updateCurrentToDo({
+  //     variables: { newToDo },
+  //     refetchQueries: [
+  //       {
+  //         query: GET_CURRENT_TODO
+  //       }
+  //     ]
+  //   });
+  // }
+
+  if (loading || draftLoading || currentToDoLoading) return <p>loading.............</p>;
+  if (error || draftError || currentToDoError)
     return (
       <p>
         ERROR: {(error && error.message) || (draftError && draftError.message)}
       </p>
     );
-  
-  const addAndRefreshDrafts = (title) => {
-    const draftToDo = {
-      _id: generateId(),
-      title: title,
-      completed: false
-    }
-    addDraftToDo({
-      variables: { draftToDo },
-      refetchQueries: [
-        {
-          query: GET_DRAFT_TODOS
-        }
-      ]
-    });
-  }
+
   const props = {
+    // currentToDo,
+    // modifyCurrentToDo,
     draftToDos,
-    addAndRefreshDrafts,
+    addDraftToDo,
     deleteDraftToDo,
     toDos: data.toDos,
     addToDo,

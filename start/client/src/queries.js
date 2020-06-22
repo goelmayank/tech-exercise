@@ -1,5 +1,21 @@
 import gql from "graphql-tag";
 
+export const GET_CURRENT_TODO = gql`
+  query GetCurrentToDo {
+    currentToDo @client {
+      _id
+      title
+      completed
+    }
+  }
+`;
+
+export const UPDATE_CURRENT_TODO = gql`
+  query updateCurrentToDo {
+    updateCurrentToDo @client
+  }
+`;
+
 export const GET_DRAFT_TODOS = gql`
   query GetdraftToDos {
     draftToDos @client

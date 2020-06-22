@@ -8,12 +8,14 @@ import { HttpLink } from "apollo-link-http";
 import { ApolloProvider } from "@apollo/react-hooks";
 
 import Pages from './pages';
-
+import { generateId } from "./lib/toDoHelpers";
 import { resolvers, typeDefs } from "./resolvers";
 
 // Set up our apollo-client to point at the server we created
 // this can be local or a remote endpoint
-const cache = new InMemoryCache();
+const cache = new InMemoryCache({
+  dataIdFromObject: object => object._id || null
+});
 
 // await before instantiating ApolloClient, else queries might run before the cache is persisted
 persistCache({
@@ -28,11 +30,16 @@ const client = new ApolloClient({
   }),
   resolvers,
   typeDefs
-});
+}); 
 
 cache.writeData({
   data: {
-    draftToDos: []
+    draftToDos: [],
+    currentToDo: {
+      _id: "5eeafe4ae060af3ce2bfeb34",
+      title: "",
+      completed: false
+    }
   }
 });
 

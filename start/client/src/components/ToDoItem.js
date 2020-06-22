@@ -13,7 +13,7 @@ export const ToDoItem = props => {
           <input
             type="checkbox"
             id={props._id}
-            checked={props.checked}
+            checked={props.completed}
             onChange={handleToggle}
           />
           {props.title}
